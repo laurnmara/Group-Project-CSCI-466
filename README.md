@@ -1,6 +1,13 @@
 # Group-Project-CSCI-466
 
-Hi everyone! This is the official workspace for our group project. There are a couple main components to the PHP/PDO portion of the application. They include:
+Hi everyone! This is the official workspace for our group project. There are a couple main components to the PHP/PDO portion of the application. They include the following. Please make whatever changes required and this is just a rough idea of what we need to do based on the requirements. Feel free to clone the repository from this GitHub page so you can get all the files. Anastasia and Lauren will work on the PHP/PDO but we might need more people since there is a lot of things to do. 
+
+* Important note: Try to work on ONLY the files you're set to work on. We don't want a lot of people messing with the same code. If we stick to working on our specified files, all you need to do is use the command `git pull` and `git push` so we can get and send updates files on here. 
+
+# Components to Create and Reuse
+* Nav bar - navigation bar that includes links to Products page (1), Cart (4), User Orders (5)
+* Footer bar - navigation bar on bottom of page for OWNER Links. Links to pages: Owner Outstanding Order Tracker (7), Product Inventory (6), Order Fufillment page (8)
+* Product display - Shows image, product name, price, and other buttons (like description/more details button, and add to cart button). We can reuse this on Home page (1), and several others
 
 # User Pages
 1. Home / Product Listing page - 
