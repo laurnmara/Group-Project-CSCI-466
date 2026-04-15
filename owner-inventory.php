@@ -4,8 +4,7 @@
     </head>
 
 <body>
-
-    <!-- User Nav bar for website -->
+        <!-- User Nav bar for website -->
         <nav class="navbar">
             <ul>
                 <li><a href="home.php">Shop</a></li>
@@ -13,7 +12,6 @@
                 <li><a href="user-orderplaced.php">Check Order Status</a></li>
             </ul>
         </nav>
-        
 <?php
         // Login Credentials + Functions for DB
         include("functions-components.php");
