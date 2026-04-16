@@ -29,6 +29,17 @@
             if ($id === false) {
                 die("Invalid ID provided.");
             }
+
+            $product = $pdo->prepare("SELECT * FROM Product WHERE ProductID = :id");
+            $product->execute(['id' => $id]);
+            $result = $product->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$result) { echo 'No results found!'; die(); }
+            else {
+                echo "<h4>{$result['Name']}</h4>";
+                echo "<p>{$result['Description']}</p>";
+                echo "<p>{$result['Price']}</p>";
+            }
             
         }
         catch(PDOexception $e) {
