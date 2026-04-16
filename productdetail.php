@@ -15,6 +15,7 @@
 <?php
         // Login Credentials + Functions for DB
         include("functions-components.php");
+        session_start();
 
         try {
             // Connecting using MySql (MariaDB)
@@ -39,9 +40,19 @@
                 echo "<h4>{$result['Name']}</h4>";
                 echo "<p>{$result['Description']}</p>";
                 echo "<p>{$result['Price']}</p>";
+                echo "<p>There are currently: {$result['NumInStock']} in stock.</p>";
+                
+                echo "<form method='POST' action='cart.php'>
+                <input type='hidden' name='product_id' value='{$result['ProductID']}'>
+                <label>Qty: </label>
+                <input type='number' name='quantity' value='1' min='1' style='width:50px;'>
+                <button type='submit' name='add_to_cart'>Add to Cart</button>
+                </form>";
+
+                exit();
             }
-            
         }
+
         catch(PDOexception $e) {
             echo "Connection to database has failed: " . $e->getMessage();
         }
