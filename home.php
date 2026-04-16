@@ -32,12 +32,12 @@
             if (!$products_fetch) { echo 'No results found!'; die(); }
             else {
             echo "<table cellspacing=2>";
-                foreach($products_fetch as $row) {
+                foreach($products_fetch as $key => $row) {
                     echo "<tr>";
                     foreach($row as $item) {
                     echo "<td>$item</td>";
                 }
-                echo "<td><a href='$url'>Click Here</a></td>";
+                echo "<td><a href='$url' class='btn'>Learn More</a></td>";
                 echo "</tr>";
             }
             echo "</table>";

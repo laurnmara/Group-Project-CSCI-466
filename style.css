@@ -24,9 +24,24 @@ main{
 }
 
 .navbar a:hover{
-    background: darkgrey;
+    background: #a9a9a9;
 }
 
 .navbar li{
     float: left;
+}
+
+.btn {
+  background-color: #a9a9a9; 
+  color: white;             
+  padding: 10px 20px;       
+  border: none;              
+  border-radius: 5px;        
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s; 
+}
+
+.btn:hover {
+  background-color: #777777; 
 }
