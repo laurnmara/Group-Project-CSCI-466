@@ -18,10 +18,17 @@
 
         try {
             // Connecting using MySql (MariaDB)
-            $dsn = "mysql:host=courses;dbname=z2020678";
+            $dsn = "mysql:host=courses;dbname=z2048942";
             $pdo = new PDO($dsn, $username, $password);
             $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
 
+            $raw_id = $_GET['id'] ?? null;
+
+            $id = filter_var($raw_id, FILTER_VALIDATE_INT);
+
+            if ($id === false) {
+                die("Invalid ID provided.");
+            }
             
         }
         catch(PDOexception $e) {
