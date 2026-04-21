@@ -1,6 +1,7 @@
 <html>
     <head>
-        <title>Default</title>
+        <title>Cart</title>
+        <link rel="stylesheet" href="style.css">
     </head>
 
 <body>
@@ -23,26 +24,51 @@
             $pdo = new PDO($dsn, $username, $password);
             $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
 
+            if (!isset($_SESSION['user_id'])) {
+                $_SESSION['user_id'] = 1; // pretend user 1 is logged in
+            }
 
+            // get user cart
+                $stmt = $pdo->prepare("SELECT CartID FROM Cart WHERE UserID = ?");
+                $stmt->execute([$_SESSION['user_id']]);
+                $cart = $stmt->fetch();
+                $cartID = $cart['CartID'];
+            
             if (isset($_POST['add_to_cart'])) {
-                $id = $_POST['product_id'];
+
+                $id = $_POST['product_id']; 
                 $qty = filter_var($_POST['quantity'], FILTER_VALIDATE_INT);
 
-                if (!isset($_SESSION['cart'])) {
-                    $_SESSION['cart'] = [];
-                }
+                // update product qty
+                $product_qty = $pdo->prepare("UPDATE Product SET NumInStock = NumInStock - ? WHERE ProductID = ?");
+                $product_qty->execute([$qty,$id]);
 
-                // If item is already in cart, add to the existing quantity
-                if (isset($_SESSION['cart'][$id])) {
-                    $_SESSION['cart'][$id] += $qty;
-                } else {
-                // Otherwise, set it to the chosen quantity
-                $_SESSION['cart'][$id] = $qty;
-                }
+                // insert into DB
+                $stmt = $pdo->prepare("
+                INSERT INTO CartProduct (CartID, ProductID, Quantity)
+                VALUES (?, ?, ?)
+                ON DUPLICATE KEY UPDATE Quantity = Quantity + ?
+                ");
 
-                print_r($_SESSION['cart']);
+                $stmt->execute([$cartID, $id, $qty, $qty]);
                 
-            }           
+            }
+            
+            echo "<h2>Your Cart</h2>";
+
+            $stmt = $pdo->prepare("
+            SELECT Product.Name, Product.Price, CartProduct.Quantity
+            FROM CartProduct
+            JOIN Product ON CartProduct.ProductID = Product.ProductID
+            WHERE CartProduct.CartID = ?
+            ");
+
+            $stmt->execute([$cartID]);
+            $items = $stmt->fetchAll();
+
+            foreach ($items as $item) {
+            echo $item['Name'] . " - Qty: " . $item['Quantity'] . "<br>";
+            }
             
         }
         catch(PDOexception $e) {

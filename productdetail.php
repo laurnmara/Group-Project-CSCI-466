@@ -1,6 +1,7 @@
 <html>
     <head>
-        <title>Default</title>
+        <title>Product Detail</title>
+        <link rel="stylesheet" href="style.css">
     </head>
 
 <body>
@@ -22,6 +23,10 @@
             $dsn = "mysql:host=courses;dbname=z2048942";
             $pdo = new PDO($dsn, $username, $password);
             $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+
+            if (!isset($_SESSION['user_id'])) {
+                $_SESSION['user_id'] = 1; // pretend user 1 is logged in
+            }
 
             $raw_id = $_GET['id'] ?? null;
 
