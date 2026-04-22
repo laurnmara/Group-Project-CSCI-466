@@ -25,15 +25,20 @@
             $pdo = new PDO($dsn, $username, $password);
             $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
 
-            if (!isset($_SESSION['user_id'])) {
-                $_SESSION['user_id'] = 1; // pretend user 1 is logged in
-            }
+            $userID = $_SESSION['user_id'] = 1; // pretend user 1 is logged in
 
-            // get user cart
-                $stmt = $pdo->prepare("SELECT CartID FROM Cart WHERE UserID = ?");
-                $stmt->execute([$_SESSION['user_id']]);
-                $cart = $stmt->fetch();
+            $stmt = $pdo->prepare("SELECT CartID FROM Cart WHERE UserID = ?");
+            $stmt->execute([$userID]);
+            $cart = $stmt->fetch();
+
+            if ($cart) {
                 $cartID = $cart['CartID'];
+            } else {
+                // If no cart exists, create one
+                $stmt = $pdo->prepare("INSERT INTO Cart (UserID, TotalCost) VALUES (?, 0)");
+                $stmt->execute([$userID]);
+                $cartID = $pdo->lastInsertId();
+}
             
             if (isset($_POST['add_to_cart'])) {
 
@@ -52,33 +57,55 @@
                 ");
 
                 $stmt->execute([$cartID, $id, $qty, $qty]);
-                
             }
             
             echo "<h2>Your Cart</h2>";
 
             $stmt = $pdo->prepare("
-            SELECT Product.Name, Product.Price, CartProduct.Quantity
+            SELECT Product.Name, Product.Price, Product.ProductID, Product.NumInStock, CartProduct.Quantity
             FROM CartProduct
             JOIN Product ON CartProduct.ProductID = Product.ProductID
             WHERE CartProduct.CartID = ?
             ");
 
-            $sum;
             $stmt->execute([$cartID]);
             $items = $stmt->fetchAll();
 
+            $sum = 0;
+
+            // display the cart
             foreach ($items as $item) {
-            echo $item['Name'] . " - Qty: " . $item['Quantity'] . "<br>";
-            $sum = $sum + ($item['Quantity'] * $item['Price']);
-            echo "<form method='POST' action='delete_product.php' onsubmit='return confirm('Are you sure?');'>
-            <input type='hidden' name='product_id' value='<?php echo $item['ProductID']; ?>'>
-            <button type='submit' name='delete_btn'>Delete</button>
-            </form>";
+                echo $item['Name'];
+                $sum = $sum + ($item['Quantity'] * $item['Price']);
+                echo "<form method='POST' action='update_product.php' onsubmit=\"return confirm('Are you sure?');\">
+                <input type='hidden' name='product_id' value='{$item['ProductID']}'>
+                <label>Qty: </label>
+                <input type='number' name='quantity' value='{$item['Quantity']}' min='0' max='" . ($item['NumInStock'] + $item['Quantity']) . "' style='width:50px;'>
+                <button type='submit' name='update_btn'>Update</button>
+                </form>";
             }
 
-            echo "<h3>Your Total: </h3>" . $sum;
-            
+            // update total cost in DB
+            $stmt = $pdo->prepare("
+            UPDATE Cart 
+            SET TotalCost = ? 
+            WHERE CartID = ? AND UserID = ?");
+            $stmt->execute([$sum, $cartID, $userID]);
+
+            $stmt = $pdo->prepare("
+            SELECT TotalCost 
+            FROM Cart 
+            WHERE CartID = ? AND UserID = ?");
+            $stmt->execute([$cartID, $userID]);
+            $fetch = $stmt->fetch();
+            $totalCost = $fetch['TotalCost'];
+
+            echo "<h3>Your Total: </h3>" . $totalCost;
+
+            echo "<form method='POST' action='user_orderplaced.php'>
+            <button type='submit' name='checkout_btn'>Checkout</button>
+            </form>";
+
         }
         catch(PDOexception $e) {
             echo "Connection to database has failed: " . $e->getMessage();
