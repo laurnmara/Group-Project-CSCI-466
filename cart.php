@@ -63,12 +63,20 @@
             WHERE CartProduct.CartID = ?
             ");
 
+            $sum;
             $stmt->execute([$cartID]);
             $items = $stmt->fetchAll();
 
             foreach ($items as $item) {
             echo $item['Name'] . " - Qty: " . $item['Quantity'] . "<br>";
+            $sum = $sum + ($item['Quantity'] * $item['Price']);
+            echo "<form method='POST' action='delete_product.php' onsubmit='return confirm('Are you sure?');'>
+            <input type='hidden' name='product_id' value='<?php echo $item['ProductID']; ?>'>
+            <button type='submit' name='delete_btn'>Delete</button>
+            </form>";
             }
+
+            echo "<h3>Your Total: </h3>" . $sum;
             
         }
         catch(PDOexception $e) {
