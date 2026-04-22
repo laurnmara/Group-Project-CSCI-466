@@ -11,6 +11,7 @@
                 <li><a href="home.php">Shop</a></li>
                 <li><a href="cart.php">Cart</a></li>
                 <li><a href="user-orderplaced.php">Check Order Status</a></li>
+                <li><a href="owner-inventory.php">Store Inventory</a></li>
             </ul>
         </nav>
 <?php

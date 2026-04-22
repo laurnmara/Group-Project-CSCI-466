@@ -1,6 +1,7 @@
 <html>
     <head>
-        <title>Default</title>
+        <title>Store Inventory</title>
+        <link rel="stylesheet" href="style.css">
     </head>
 
 <body>
@@ -10,18 +11,44 @@
                 <li><a href="home.php">Shop</a></li>
                 <li><a href="cart.php">Cart</a></li>
                 <li><a href="user-orderplaced.php">Check Order Status</a></li>
+                <li><a href="owner-inventory.php">Store Inventory</a></li>
+                
             </ul>
         </nav>
 <?php
         // Login Credentials + Functions for DB
         include("functions-components.php");
+        session_start();
 
         try {
             // Connecting using MySql (MariaDB)
-            $dsn = "mysql:host=courses;dbname=z2020678";
+            $dsn = "mysql:host=courses;dbname=z2048942";
             $pdo = new PDO($dsn, $username, $password);
             $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
 
+            if (!isset($_SESSION['user_id'])) {
+                $_SESSION['user_id'] = 1; // pretend user 1 is logged in
+            } 
+
+            // Get all items in inventory & quantity
+            echo "<h2>Owner Inventory - All Items in Store</h2>";
+            $products_query = $pdo->query("SELECT * FROM Product;");
+            $products_fetch = $products_query->fetchALL(PDO::FETCH_ASSOC);
+
+            if (!$products_fetch) { echo 'No results found!'; die(); }
+            else {
+                echo "<table cellspacing=2>";
+                foreach($products_fetch as $row) {
+                    echo "<tr>";
+                    echo "<td>{$row['ProductID']}</td>";
+                    echo "<td>{$row['Name']}</td>";
+                    echo "<td>{$row['Description']}</td>";
+                    echo "<td>{$row['Price']}</td>";          
+                    echo "<td>{$row['NumInStock']}</td>";                   
+                    echo "</tr>";
+                }
+                echo "</table>";
+            }
             
         }
         catch(PDOexception $e) {

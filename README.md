@@ -35,6 +35,7 @@ Hi everyone! This is the official workspace for our group project. There are a c
    Will show the owner ALL the products regardless in they are in stock or not.
    * *EX: (SELECT * from Product). Show results in table or product component (working on that - lauren)*
 
+(7 & 8 can be combined on one page -> the user can then be redirected to each individual order's detail pg)
 7. Outstanding Orders Tracker page - 
    Shows the owner all the orders not shipped yet. (Processing)
     * *EX: (SELECT * from Order WHERE status!='Shipped')*
