@@ -12,7 +12,7 @@
                 <li><a href="cart.php">Cart</a></li>
                 <li><a href="user_orderplaced.php">Check Order Status</a></li>
                 <li><a href="owner-inventory.php">Store Inventory</a></li>
-                
+                <li><a href="owner-orderfufill.php">Order Fufillment</a></li>
             </ul>
         </nav>
 <?php
