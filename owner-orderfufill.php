@@ -48,21 +48,20 @@
                 //inserting new Tracking Number if status was changed to Delivered or Shipped
                 if($_GET["order_status"] != "Processing") {
 
-                    $new_tracknum = 'TRK';
-
                     // FIX LOGIC FOR INCREMENTING TRK NUMBER
                     // //creating new tracking num || note: tracking num in TRKXXXX format
-                    // $track_query = $pdo->query("SELECT MAX(TrackingNum) FROM StoreOrder;");
-                    // $old_tracknum = $track_query->fetch(PDO::FETCH_ASSOC);
+                    $track_query = $pdo->query("SELECT MAX(TrackingNum) FROM StoreOrder;");
+                    $old_tracknum = $track_query->fetchColumn(); 
 
-                    // if($old_tracknum) { //getting last tracking number
-                    //     $new_tracknum = substr($old_tracknum, 4);
-
-                    //     //update tracking number
-                    //     $new_tracknum = $new_tracknum + 1;
-                    //     $new_tracknum = 'TRK' . $new_tracknum;
-                    // }
-                    // else { $new_tracknum = "TRK1001"; } //resetting tracking number to TRK1001
+                    if ($old_tracknum) { 
+                        $num_part = substr($old_tracknum, 3); 
+                        
+                        $new_tracknum = intval($num_part) + 1;
+                        $new_tracknum = 'TRK' . $new_tracknum;
+                    } else { 
+                        // If table is empty or all TrackingNums are NULL
+                        $new_tracknum = "TRK1001"; 
+                    }
 
                     $status_stmt = $pdo->prepare(
                         "UPDATE StoreOrder
