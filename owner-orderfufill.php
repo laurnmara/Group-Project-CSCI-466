@@ -30,6 +30,65 @@
                 $_SESSION['user_id'] = 1; // pretend user 1 is logged in
             }
 
+            if (isset($_GET['orderno'], $_GET['order_status'])) {
+                //processing order edit
+                $order_stmt = $pdo->prepare(
+                "UPDATE StoreOrder
+                SET Status = :new_status
+                WHERE OrderNum = :ordnum;"
+                );
+
+                $order_stmt->execute(array(
+                ":new_status" => $_GET["order_status"], 
+                ":ordnum" => $_GET["orderno"]
+                ));
+
+                if(!$order_stmt) { echo "Invalid Query!"; die(); }
+
+                //inserting new Tracking Number if status was changed to Delivered or Shipped
+                if($_GET["order_status"] != "Processing") {
+
+                    $new_tracknum = 'TRK';
+
+                    // FIX LOGIC FOR INCREMENTING TRK NUMBER
+                    // //creating new tracking num || note: tracking num in TRKXXXX format
+                    // $track_query = $pdo->query("SELECT MAX(TrackingNum) FROM StoreOrder;");
+                    // $old_tracknum = $track_query->fetch(PDO::FETCH_ASSOC);
+
+                    // if($old_tracknum) { //getting last tracking number
+                    //     $new_tracknum = substr($old_tracknum, 4);
+
+                    //     //update tracking number
+                    //     $new_tracknum = $new_tracknum + 1;
+                    //     $new_tracknum = 'TRK' . $new_tracknum;
+                    // }
+                    // else { $new_tracknum = "TRK1001"; } //resetting tracking number to TRK1001
+
+                    $status_stmt = $pdo->prepare(
+                        "UPDATE StoreOrder
+                        SET TrackingNum = :trknum
+                        WHERE OrderNum = :ordnum;"
+                        );
+                    $status_stmt->execute(array(
+                        ":trknum" => $new_tracknum,
+                        ":ordnum" => $_GET["orderno"]
+                        ));
+                    if(!$status_stmt) { echo "Invalid Query!"; die(); }
+                }
+                else { 
+
+                    //if order status is Delivered or Shipped, remove tracking number
+                    $trk_remove = $pdo->prepare(
+                        "UPDATE StoreOrder
+                        SET TrackingNum = null
+                        WHERE OrderNum = ?"
+                    );
+                    $trk_remove->execute(array($_GET["orderno"]));
+                    if(!$trk_remove) { echo "Tracking Number could not be removed!"; die(); }
+                }
+
+            }
+
             echo "<h2>Owner's Order Fufillment</h2>";
 
             // outstanding orders tracker page
@@ -95,60 +154,6 @@
 
                 echo '<input type="submit" value="Update Order" class="btn" />';
             echo '</form>';
-
-           //processing order edit
-            $order_stmt = $pdo->prepare(
-                "UPDATE StoreOrder
-                 SET Status = :new_status
-                 WHERE OrderNum = :ordnum;"
-                );
-            $order_stmt->execute(array(
-                ":new_status" => $_GET["order_status"], 
-                ":ordnum" => $_GET["orderno"]
-            ));
-            if(!$order_stmt) { echo "Invalid Query!"; die(); }
-
-            //inserting new Tracking Number if status was changed to Delivered or Shipped
-            if($_GET["order_status"] != "Processing") {
-
-                $new_tracknum = 'TRKTEST';
-
-                // FIX LOGIC FOR INCREMENTING TRK NUMBER
-                // //creating new tracking num || note: tracking num in TRKXXXX format
-                // $track_query = $pdo->query("SELECT MAX(TrackingNum) FROM StoreOrder;");
-                // $old_tracknum = $track_query->fetch(PDO::FETCH_ASSOC);
-
-                // if($old_tracknum) { //getting last tracking number
-                //     $new_tracknum = substr($old_tracknum, 4);
-
-                //     //update tracking number
-                //     $new_tracknum = $new_tracknum + 1;
-                //     $new_tracknum = 'TRK' . $new_tracknum;
-                // }
-                // else { $new_tracknum = "TRK1001"; } //resetting tracking number to TRK1001
-
-                $status_stmt = $pdo->prepare(
-                    "UPDATE StoreOrder
-                    SET TrackingNum = :trknum
-                    WHERE OrderNum = :ordnum;"
-                    );
-                $status_stmt->execute(array(
-                    ":trknum" => $new_tracknum,
-                    ":ordnum" => $_GET["orderno"]
-                    ));
-                if(!$status_stmt) { echo "Invalid Query!"; die(); }
-            }
-            else { 
-
-                //if order status is Delivered or Shipped, remove tracking number
-                $trk_remove = $pdo->prepare(
-                    "UPDATE StoreOrder
-                    SET TrackingNum = null
-                    WHERE OrderNum = ?"
-                );
-                $trk_remove->execute(array($_GET["orderno"]));
-                if(!$trk_remove) { echo "Tracking Number could not be removed!"; die(); }
-            }
             
         }
         catch(PDOexception $e) {
