@@ -49,9 +49,13 @@
                 $stmt->execute([$paymentID, $cartID, $userID, $address, $bill_address, 
                 $totalPaid, $date, "Processing"]);
 
+                $stmt = $pdo->prepare("DELETE FROM Cart WHERE CartID = ?");
+                $stmt->execute([$cartID]);
+
                 $url = "track_order.php";
                 echo "<h3>Your order has been placed!</h3>";
                 echo "<br><h3>Click <a href='$url'>here</a> to track your order!</h3>";
+
             }    
         }
         catch(PDOexception $e) {
