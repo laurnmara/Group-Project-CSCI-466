@@ -77,7 +77,7 @@
             foreach ($items as $item) {
                 echo $item['Name'];
                 $sum = $sum + ($item['Quantity'] * $item['Price']);
-                echo "<form method='POST' action='update_product.php' onsubmit=\"return confirm('Are you sure?');\">
+                echo "<form method='POST' action='update_product.php' onsubmit=\"return confirm('Make Changes?');\">
                 <input type='hidden' name='product_id' value='{$item['ProductID']}'>
                 <label>Qty: </label>
                 <input type='number' name='quantity' value='{$item['Quantity']}' min='0' max='" . ($item['NumInStock'] + $item['Quantity']) . "' style='width:50px;'>
@@ -102,7 +102,7 @@
 
             echo "<h3>Your Total: </h3>" . $totalCost;
 
-            echo "<form method='POST' action='user_orderplaced.php'>
+            echo "<form method='POST' action='user_checkout.php'>
             <button type='submit' name='checkout_btn'>Checkout</button>
             </form>";
 
