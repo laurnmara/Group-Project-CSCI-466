@@ -2,8 +2,8 @@
 <?php
 
     // Username and Password for connecting to DB
-    //$username='z2020678';
-    //$password='2005Oct28';
+    // $username='z2020678';
+    // $password='2005Oct28';
 
     $username='z2048942';
     $password='2003May05';
