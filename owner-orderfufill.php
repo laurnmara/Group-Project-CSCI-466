@@ -31,7 +31,7 @@
             }
 
             echo "<h2>Owner's Order Fufillment</h2>";
-            
+
             // outstanding orders tracker page
             echo "<h3>Outstanding Orders</h3>";
 
@@ -73,7 +73,7 @@
                     echo "<td>{$row['Status']}</td>";
                     echo "<td>{$row['TrackingNum']}</td>";
 
-                    echo "<td><a class='btn' href='owner-orderdetail.php?orderno={$row['OrderNum']}'>View Details</a></td>";
+                    echo "<td><a class='btn' href='owner-orderdetail.php?orderno={$row['Order Number']}'>View Details</a></td>";
                     echo "</tr>";
                 }
                 echo "</table>";  
