@@ -8,11 +8,13 @@
         <!-- User Nav bar for website -->
         <nav class="navbar">
             <ul>
-                <li><a href="home.php">Shop</a></li>
-                <li><a href="cart.php">Cart</a></li>
-                <li><a href="track_order.php">Check Order Status</a></li>
                 <li><a href="owner-inventory.php">Store Inventory</a></li>
+                <li><a href="owner-orderdetail.php">Order Detail</a></li>
                 <li><a href="owner-orderfufill.php">Order Fufillment</a></li>
+                <li><a href="owner-ordertracker.php">Order Tracker</a></li>
+                <li><form method="POST" action="logout.php">
+                <button type="submit">Switch User</button>
+                </form></li>
             </ul>
         </nav>
 <?php
@@ -20,15 +22,16 @@
         include("functions-components.php");
         session_start();
 
+        if (!isset($_SESSION['role']) || $_SESSION['role'] != 'employee') {
+            header("Location: enter_store.php");
+            exit();
+        }
+
         try {
             // Connecting using MySql (MariaDB)
             $dsn = "mysql:host=courses;dbname=z2048942";
             $pdo = new PDO($dsn, $username, $password);
             $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
-
-            if (!isset($_SESSION['user_id'])) {
-                $_SESSION['user_id'] = 1; // pretend user 1 is logged in
-            }
 
             if (isset($_GET['orderno'], $_GET['order_status'])) {
                 //processing order edit

@@ -11,8 +11,9 @@
                 <li><a href="home.php">Shop</a></li>
                 <li><a href="cart.php">Cart</a></li>
                 <li><a href="track_order.php">Check Order Status</a></li>
-                <li><a href="owner-inventory.php">Store Inventory</a></li>
-                <li><a href="track_order.php">Order Fufillment</a></li>
+                <li><form method="POST" action="logout.php">
+                <button type="submit">Switch User</button>
+                </form></li>
             </ul>
         </nav>
 
@@ -21,15 +22,18 @@
         include("functions-components.php");
         session_start();
 
+        if (!isset($_SESSION['role']) || $_SESSION['role'] != 'customer') {
+            header("Location: enter_store.php");
+            exit();
+        }
+
+        $userID = $_SESSION['user_id'];
+
         try {
             // Connecting using MySql (MariaDB)
             $dsn = "mysql:host=courses;dbname=z2048942";
             $pdo = new PDO($dsn, $username, $password);
             $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
-
-            if (!isset($_SESSION['user_id'])) {
-                $_SESSION['user_id'] = 1; // pretend user 1 is logged in
-            }
 
             $products_query = $pdo->query("SELECT Name, Price, ProductID FROM Product WHERE NumInStock >= 1");
             $products_fetch = $products_query->fetchALL(PDO::FETCH_ASSOC);
