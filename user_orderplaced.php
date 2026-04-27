@@ -47,16 +47,13 @@
                 $stmt = $pdo->prepare("UPDATE Users SET Name = ?, Email = ?, PhoneNum = ? WHERE UserID = ?");
                 $stmt->execute([$name, $email, $phone, $userID]);
 
-                $stmt = $pdo->prepare("UPDATE Payment SET PaymentID = ? WHERE UserID = ?");
-                $stmt->execute([$paymentID, $userID]);
-
                 $date = date("Y-m-d");
                 $stmt = $pdo->prepare("INSERT INTO StoreOrder (PaymentID, CartID, UserID, 
                 ShipAddr, BillAddr, PricePaid, Date, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                 $stmt->execute([$paymentID, $cartID, $userID, $address, $bill_address, 
                 $totalPaid, $date, "Processing"]);
 
-                $stmt = $pdo->prepare("DELETE FROM Cart WHERE CartID = ?");
+                $stmt = $pdo->prepare("DELETE FROM CartProduct WHERE CartID = ?");
                 $stmt->execute([$cartID]);
 
                 $url = "track_order.php";

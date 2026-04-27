@@ -38,14 +38,7 @@
             $stmt->execute([$userID]);
             $cart = $stmt->fetch();
 
-            if ($cart) {
-                $cartID = $cart['CartID'];
-            } else {
-                // If no cart exists, create one
-                $stmt = $pdo->prepare("INSERT INTO Cart (UserID, TotalCost) VALUES (?, 0)");
-                $stmt->execute([$userID]);
-                $cartID = $pdo->lastInsertId();
-}
+            $cartID = $cart['CartID'];
             
             if (isset($_POST['add_to_cart'])) {
 
