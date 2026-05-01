@@ -48,18 +48,26 @@
             
             if (!$result) { echo 'No results found!'; die(); }
             else {
-                echo "<h4>{$result['Name']}</h4>";
-                echo "<p>{$result['Description']}</p>";
-                echo "<p>{$result['Price']}</p>";
-                echo "<p>There are currently: {$result['NumInStock']} in stock.</p>";
-                
-                echo "<form method='POST' action='cart.php'>
-                <input type='hidden' name='product_id' value='{$result['ProductID']}'>
-                <label>Qty: </label>
-                <input type='number' name='quantity' value='1' min='1' style='width:50px;'>
-                <button type='submit' name='add_to_cart'>Add to Cart</button>
-                </form>";
+                echo "<div class='product-grid'>";
+                    echo "<div class='product-card'>";
+                        echo "<div class='product-image-wrapper'>";
+                            echo "<img src='uploads/" . htmlspecialchars($id) . ".jpg' width='200'>";
+                        echo "</div>";
+                        
+                        echo "<h4 class='product-name'>{$result['Name']}</h4>";
+                        echo "<p>{$result['Description']}</p>";
+                        echo "<p class='product-price'>{$result['Price']}</p>";
+                        echo "<p>There are currently: {$result['NumInStock']} in stock.</p>";
+                        
+                        echo "<form method='POST' action='cart.php'>
+                        <input type='hidden' name='product_id' value='{$result['ProductID']}'>
+                        <label>Qty: </label>
+                        <input type='number' name='quantity' value='1' min='1' style='width:50px;'>
+                        <button class='btn' type='submit' name='add_to_cart'>Add to Cart</button>
+                        </form>";
 
+                    echo "</div>";
+                echo "</div>";
             }
         }
 

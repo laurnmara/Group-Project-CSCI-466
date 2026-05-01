@@ -40,15 +40,20 @@
 
             if (!$products_fetch) { echo 'No results found!'; die(); }
             else {
-                echo "<table cellspacing=2>";
+
+                echo "<div class='product-grid'>";
+                
                 foreach($products_fetch as $row) {
-                    echo "<tr>";
-                    echo "<td>{$row['Name']}</td>";
-                    echo "<td>{$row['Price']}</td>";
-                    echo "<td><a class='btn' href='productdetail.php?id={$row['ProductID']}'>Learn More</a></td>";
-                    echo "</tr>";
+                    echo "<div class='product-card'>";
+                        echo "<div class='product-image-wrapper'>";
+                            echo "<img src='uploads/" . htmlspecialchars($row['ProductID']) . ".jpg' width='200'>";
+                        echo "</div>";
+                    echo "<h3 class='product-name'>{$row['Name']}</h3>";
+                    echo "<p class='product-price'>\${$row['Price']}</p>";
+                    echo "<a class='btn' href='productdetail.php?id={$row['ProductID']}'>Learn More</a>";
+                    echo "</div>";
                 }
-                echo "</table>";
+                echo "</div>";
             }
         }
 
