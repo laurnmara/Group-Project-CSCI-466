@@ -44,6 +44,16 @@
                 $cartID = $_POST['cartID'];
                 $totalPaid = $_POST['totalCost'];
 
+                //check if payment exists
+                $stmt = $pdo->prepare("SELECT 1 FROM Payment WHERE PaymentID = ? LIMIT 1");
+                $stmt->execute([$paymentID]);
+
+                //if paymentID doesn't exist
+                if (!$stmt->fetchColumn()) {
+                    $stmt = $pdo->prepare("INSERT INTO Payment (PaymentID, UserID) VALUES (?, ?)");
+                    $stmt->execute([$paymentID, $userID]);
+                }
+
                 $stmt = $pdo->prepare("UPDATE Users SET Name = ?, Email = ?, PhoneNum = ? WHERE UserID = ?");
                 $stmt->execute([$name, $email, $phone, $userID]);
 
