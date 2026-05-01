@@ -9,9 +9,7 @@
         <nav class="navbar">
             <ul>
                 <li><a href="owner-inventory.php">Store Inventory</a></li>
-                <li><a href="owner-orderdetail.php">Order Detail</a></li>
                 <li><a href="owner-orderfufill.php">Order Fufillment</a></li>
-                <li><a href="owner-ordertracker.php">Order Tracker</a></li>
                 <li><form method="POST" action="logout.php">
                 <button type="submit">Switch User</button>
                 </form></li>
@@ -33,6 +31,11 @@
             $pdo = new PDO($dsn, $username, $password);
             $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
 
+            if (isset($_POST['update_btn'])) {
+                $stmt = $pdo->prepare("UPDATE Product SET NumInStock = ? WHERE ProductID = ?;");
+                $stmt->execute([$_POST['quantity'], $_POST['product_id']]);
+            }
+
             // Get all items in inventory & quantity
             echo "<h2>Owner Inventory - All Items in Store</h2>";
             $products_query = $pdo->query("SELECT * FROM Product;");
@@ -47,7 +50,12 @@
                     echo "<td>{$row['Name']}</td>";
                     echo "<td>{$row['Description']}</td>";
                     echo "<td>{$row['Price']}</td>";          
-                    echo "<td>{$row['NumInStock']}</td>";                   
+                    echo "<td><form method='POST' action='owner-inventory.php' onsubmit=\"return confirm('Make Changes?');\">
+                    <input type='hidden' name='product_id' value='{$row['ProductID']}'>
+                    <label>Qty: </label>
+                    <input type='number' name='quantity' value='{$row['NumInStock']}' min='0' style='width:100px;'>
+                    <button type='submit' name='update_btn'>Update</button>
+                    </form></td>";                   
                     echo "</tr>";
                 }
                 echo "</table>";

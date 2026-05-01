@@ -9,9 +9,7 @@
         <nav class="navbar">
             <ul>
                 <li><a href="owner-inventory.php">Store Inventory</a></li>
-                <li><a href="owner-orderdetail.php">Order Detail</a></li>
                 <li><a href="owner-orderfufill.php">Order Fufillment</a></li>
-                <li><a href="owner-ordertracker.php">Order Tracker</a></li>
                 <li><form method="POST" action="logout.php">
                 <button type="submit">Switch User</button>
                 </form></li>
@@ -32,6 +30,15 @@
             $dsn = "mysql:host=courses;dbname=z2048942";
             $pdo = new PDO($dsn, $username, $password);
             $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+
+            if (isset($_POST['note_update'])) {
+                $note_stmt = $pdo->prepare("UPDATE StoreOrder SET Notes = ? WHERE OrderNum = ?");
+                $note_stmt->execute([$_POST['note_update'], $_POST['orderno']]);
+
+                echo "<p class='alert-success' style='color: green;'>✅ Update Saved!</p>";
+
+                exit();
+            }
 
             //getting order information
             $info_stmt = $pdo->prepare(
@@ -64,26 +71,15 @@
                 echo "<p>Billing Address: {$info_row['BillAddr']}</p>";
                 echo "</br>";
 
-                echo "<h3>Notes:</h3>";
-                echo "<p>{$info_row['Notes']}</p>";
+                echo "<h3>Notes:</h3><p>" . htmlspecialchars($info_row['Notes']) . "</p>";
             }
 
-            //submit new note -- not working yet!
-            echo "</br>";
-            echo "<form action='owner-orderdetail.php?orderno={$info_row['OrderNum']}&note_update={$_GET['note_update']}' method='GET'>";
-                echo "Type in new note for {$info_row['Name']}: ";
-                echo '<input type="text" name="note_update"/>'. '</br>';
-                echo '<input type="submit" value="Update Note" class="btn" />';
-            echo '</form>';
-
-            //processing order edit
-            $note_stmt = $pdo->prepare(
-                "UPDATE StoreOrder
-                 SET Notes = ?
-                 WHERE OrderNum = ?;"
-                );
-            $note_stmt->execute(array($_GET['note_update'], $_GET['orderno']));
-            if(!$note_stmt) { echo "Invalid Query!"; die(); }
+            echo "<form action='owner-orderdetail.php?orderno={$info_row['OrderNum']}' method='POST'>
+                Type in new note for {$info_row['Name']}:
+                <input type='hidden' name='orderno' value='{$info_row['OrderNum']}'>
+                <input type='text' name='note_update' required /><br>
+                <input type='submit' value='Update Note' class='btn' />
+                </form>";
             
         }
         catch(PDOexception $e) {

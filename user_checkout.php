@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Default</title>
+        <title>Checkout</title>
         <link rel="stylesheet" href="style.css">
     </head>
 

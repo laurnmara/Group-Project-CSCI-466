@@ -9,9 +9,7 @@
         <nav class="navbar">
             <ul>
                 <li><a href="owner-inventory.php">Store Inventory</a></li>
-                <li><a href="owner-orderdetail.php">Order Detail</a></li>
                 <li><a href="owner-orderfufill.php">Order Fufillment</a></li>
-                <li><a href="owner-ordertracker.php">Order Tracker</a></li>
                 <li><form method="POST" action="logout.php">
                 <button type="submit">Switch User</button>
                 </form></li>
@@ -33,7 +31,7 @@
             $pdo = new PDO($dsn, $username, $password);
             $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
 
-            if (isset($_GET['orderno'], $_GET['order_status'])) {
+            if (isset($_POST['orderno'], $_POST['order_status'])) {
                 //processing order edit
                 $order_stmt = $pdo->prepare(
                 "UPDATE StoreOrder
@@ -42,16 +40,15 @@
                 );
 
                 $order_stmt->execute(array(
-                ":new_status" => $_GET["order_status"], 
-                ":ordnum" => $_GET["orderno"]
+                ":new_status" => $_POST["order_status"], 
+                ":ordnum" => $_POST["orderno"]
                 ));
 
                 if(!$order_stmt) { echo "Invalid Query!"; die(); }
 
                 //inserting new Tracking Number if status was changed to Delivered or Shipped
-                if($_GET["order_status"] != "Processing") {
+                if($_POST["order_status"] != "Processing") {
 
-                    // FIX LOGIC FOR INCREMENTING TRK NUMBER
                     // //creating new tracking num || note: tracking num in TRKXXXX format
                     $track_query = $pdo->query("SELECT MAX(TrackingNum) FROM StoreOrder;");
                     $old_tracknum = $track_query->fetchColumn(); 
@@ -73,7 +70,7 @@
                         );
                     $status_stmt->execute(array(
                         ":trknum" => $new_tracknum,
-                        ":ordnum" => $_GET["orderno"]
+                        ":ordnum" => $_POST["orderno"]
                         ));
                     if(!$status_stmt) { echo "Invalid Query!"; die(); }
                 }
@@ -142,7 +139,7 @@
             }
 
             //edit order logic
-            echo '<form action="owner-orderfufill.php" method="GET">';
+            echo '<form action="owner-orderfufill.php" method="POST">';
 
                 echo 'Type in the Order Number to Edit: ';
                 echo '<input type="number" name="orderno" min="1" max="9999" />'. '</br>';

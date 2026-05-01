@@ -80,7 +80,7 @@
                 echo "<form method='POST' action='update_product.php' onsubmit=\"return confirm('Make Changes?');\">
                 <input type='hidden' name='product_id' value='{$item['ProductID']}'>
                 <label>Qty: </label>
-                <input type='number' name='quantity' value='{$item['Quantity']}' min='0' max='" . ($item['NumInStock'] + $item['Quantity']) . "' style='width:50px;'>
+                <input type='number' name='quantity' value='{$item['Quantity']}' min='0' max='" . ($item['NumInStock']) . "' style='width:50px;'>
                 <button type='submit' name='update_btn'>Update</button>
                 </form>";
             }
