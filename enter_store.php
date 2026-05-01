@@ -28,7 +28,7 @@
         $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
 
         $stmt = $pdo->query("SELECT * FROM Users;");
-        $stmt->execute;
+        $stmt->execute();
 
     }
 
@@ -68,7 +68,7 @@
                         </form> 
             </div>
         <div class="login-right">
-            <!-- You can put an <img> here or use a CSS background image -->
+            <img src='uploads/enter.jpg'>
         </div>
     </div>
 </div>

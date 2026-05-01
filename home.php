@@ -12,7 +12,7 @@
                 <li><a href="cart.php">Cart</a></li>
                 <li><a href="track_order.php">Check Order Status</a></li>
                 <li><form method="POST" action="logout.php">
-                <button type="submit">Switch User</button>
+                <button class="nav-btn" type="submit">Switch User</button>
                 </form></li>
             </ul>
         </nav>
@@ -40,6 +40,11 @@
 
             if (!$products_fetch) { echo 'No results found!'; die(); }
             else {
+
+                echo "<div class='page-header'>";
+                    echo "<h2>Products In Stock</h2>";
+                    echo "<div class='title-underline'></div>";
+                echo "</div>";
 
                 echo "<div class='product-grid'>";
                 

@@ -9,9 +9,10 @@
         <nav class="navbar">
             <ul>
                 <li><a href="owner-inventory.php">Store Inventory</a></li>
+                <li><a href="owner-outstanding.php">Outstanding Orders</a></li>
                 <li><a href="owner-orderfufill.php">Order Fufillment</a></li>
                 <li><form method="POST" action="logout.php">
-                <button type="submit">Switch User</button>
+                <button class="nav-btn" type="submit">Switch User</button>
                 </form></li>
             </ul>
         </nav>
@@ -37,7 +38,11 @@
             }
 
             // Get all items in inventory & quantity
-            echo "<h2>Owner Inventory - All Items in Store</h2>";
+            echo "<div class='page-header'>";
+                echo "<h2>Owner Inventory - All Items In Store</h2>";
+                echo "<div class='title-underline'></div>";
+            echo "</div>";
+
             $products_query = $pdo->query("SELECT * FROM Product;");
             $products_fetch = $products_query->fetchALL(PDO::FETCH_ASSOC);
 

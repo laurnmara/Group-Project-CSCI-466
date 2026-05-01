@@ -12,10 +12,17 @@
                 <li><a href="cart.php">Cart</a></li>
                 <li><a href="track_order.php">Check Order Status</a></li>
                 <li><form method="POST" action="logout.php">
-                <button type="submit">Switch User</button>
+                <button class="nav-btn" type="submit">Switch User</button>
                 </form></li>
             </ul>
         </nav>
+
+    <div class="page-header">
+        <h2>Success!</h2>
+        <div class="title-underline"></div>
+    </div>
+
+    <div class="cart-container" style="text-align: center;">
 <?php
         // Login Credentials + Functions for DB
         include("functions-components.php");
@@ -71,7 +78,7 @@
                 //get produtID and quantity from cartproduct to populate into orderproduct
                 $stmt = $pdo->prepare("SELECT * FROM CartProduct WHERE CartID = ?");
                 $stmt->execute([$cartID]);
-                $products = $stmt->fetchAll(PDO:FETCH_ASSOC);
+                $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 //add to OrderProduct (new order)
                 foreach ($products as $item){
@@ -83,17 +90,15 @@
                 $stmt = $pdo->prepare("DELETE FROM CartProduct WHERE CartID = ?");
                 $stmt->execute([$cartID]);
 
-                $url = "track_order.php";
                 echo "<h3>Your order has been placed!</h3>";
-                echo "<br><h3>Click <a href='$url'>here</a> to track your order!</h3>";
-
-            }    
+                echo "<p>Order Number: #$orderNum</p><br>";
+                echo "<a href='track_order.php' class='btn'>Track Order</a>";
+            }  
         }
         catch(PDOexception $e) {
             echo "Connection to database has failed: " . $e->getMessage();
         }
 ?>
-
+    </div>
 </body>
-
 </html>

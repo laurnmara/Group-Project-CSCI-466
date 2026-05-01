@@ -5,19 +5,17 @@
     </head>
 
 <body>
-        <!-- User Nav bar for website -->
         <nav class="navbar">
             <ul>
                 <li><a href="home.php">Shop</a></li>
                 <li><a href="cart.php">Cart</a></li>
                 <li><a href="track_order.php">Check Order Status</a></li>
                 <li><form method="POST" action="logout.php">
-                <button type="submit">Switch User</button>
+                <button class="nav-btn" type="submit">Switch User</button>
                 </form></li>
             </ul>
         </nav>
 <?php
-        // Login Credentials + Functions for DB
         include("functions-components.php");
         session_start();
 
@@ -29,7 +27,6 @@
         $userID = $_SESSION['user_id'];
 
         try {
-            // Connecting using MySql (MariaDB)
             $dsn = "mysql:host=courses;dbname=z2048942";
             $pdo = new PDO($dsn, $username, $password);
             $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
@@ -41,25 +38,24 @@
             $cartID = $cart['CartID'];
             
             if (isset($_POST['add_to_cart'])) {
-
                 $id = $_POST['product_id']; 
                 $qty = filter_var($_POST['quantity'], FILTER_VALIDATE_INT);
 
-                // update product qty
                 $product_qty = $pdo->prepare("UPDATE Product SET NumInStock = NumInStock - ? WHERE ProductID = ?");
                 $product_qty->execute([$qty,$id]);
 
-                // insert into DB
                 $stmt = $pdo->prepare("
                 INSERT INTO CartProduct (CartID, ProductID, Quantity)
                 VALUES (?, ?, ?)
                 ON DUPLICATE KEY UPDATE Quantity = Quantity + ?
                 ");
-
                 $stmt->execute([$cartID, $id, $qty, $qty]);
             }
             
-            echo "<h2>Your Cart</h2>";
+            echo "<div class='page-header'>";
+                echo "<h2>Your Shopping Cart</h2>";
+                echo "<div class='title-underline'></div>";
+            echo "</div>";
 
             $stmt = $pdo->prepare("
             SELECT Product.Name, Product.Price, Product.ProductID, Product.NumInStock, CartProduct.Quantity
@@ -67,52 +63,51 @@
             JOIN Product ON CartProduct.ProductID = Product.ProductID
             WHERE CartProduct.CartID = ?
             ");
-
             $stmt->execute([$cartID]);
             $items = $stmt->fetchAll();
 
             $sum = 0;
 
-            // display the cart
-            foreach ($items as $item) {
-                echo $item['Name'];
-                $sum = $sum + ($item['Quantity'] * $item['Price']);
-                echo "<form method='POST' action='update_product.php' onsubmit=\"return confirm('Make Changes?');\">
-                <input type='hidden' name='product_id' value='{$item['ProductID']}'>
-                <label>Qty: </label>
-                <input type='number' name='quantity' value='{$item['Quantity']}' min='0' max='{$item['NumInStock']}' style='width:100px;'>
-                <button type='submit' name='update_btn'>Update</button>
-                </form>";
-            }
+            echo "<div class='cart-container'>";
+    
+            if (count($items) > 0) {
+                foreach ($items as $item) {
+                    $sum += ($item['Quantity'] * $item['Price']);
+                    
+                    echo "<div class='cart-item'>";
+                        echo "<div class='item-info'>";
+                            echo "<h4>" . htmlspecialchars($item['Name']) . "</h4>";
+                            echo "<p>$" . number_format($item['Price'], 2) . "</p>";
+                        echo "</div>";
 
-            // update total cost in DB
-            $stmt = $pdo->prepare("
-            UPDATE Cart 
-            SET TotalCost = ? 
-            WHERE CartID = ? AND UserID = ?");
+                        echo "<form class='cart-update-form' method='POST' action='update_product.php' onsubmit=\"return confirm('Update quantity?');\">";
+                            echo "<input type='hidden' name='product_id' value='{$item['ProductID']}'>";
+                            echo "<label>Qty:</label>";
+                            echo "<input type='number' class='cart-qty-input' name='quantity' value='{$item['Quantity']}' min='0' max='{$item['NumInStock']}'>";
+                            echo "<button type='submit' name='update_btn' class='btn update-btn-small'>Update</button>";
+                        echo "</form>";
+                    echo "</div>";
+                }
+
+                echo "<div class='cart-summary'>";
+                    echo "<h3>Total: <span style='color:#c23f3f;'>$" . number_format($sum, 2) . "</span></h3>";
+                    echo "<form method='POST' action='user_checkout.php'>";
+                    echo "<button type='submit' name='checkout_btn' class='btn checkout-btn'>Proceed to Checkout</button>";
+                    echo "</form>";
+                echo "</div>";
+            } else {
+                echo "<p style='text-align:center; padding: 40px;'>Your cart is empty. <a href='home.php'>Go Shopping</a></p>";
+            }   
+
+            echo "</div>";
+
+            $stmt = $pdo->prepare("UPDATE Cart SET TotalCost = ? WHERE CartID = ? AND UserID = ?");
             $stmt->execute([$sum, $cartID, $userID]);
-
-            $stmt = $pdo->prepare("
-            SELECT TotalCost 
-            FROM Cart 
-            WHERE CartID = ? AND UserID = ?");
-            $stmt->execute([$cartID, $userID]);
-            $fetch = $stmt->fetch();
-            $totalCost = $fetch['TotalCost'];
-
-            echo "<h3>Your Total: </h3>" . $totalCost;
-
-            echo "<form method='POST' action='user_checkout.php'>
-            <button type='submit' name='checkout_btn'>Checkout</button>
-            </form>";
 
         }
         catch(PDOexception $e) {
             echo "Connection to database has failed: " . $e->getMessage();
         }
 ?>
-
 </body>
-
 </html>
-

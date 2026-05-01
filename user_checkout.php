@@ -12,7 +12,7 @@
                 <li><a href="cart.php">Cart</a></li>
                 <li><a href="track_order.php">Check Order Status</a></li>
                 <li><form method="POST" action="logout.php">
-                <button type="submit">Switch User</button>
+                <button class="nav-btn" type="submit">Switch User</button>
                 </form></li>
             </ul>
         </nav>
@@ -41,9 +41,15 @@
                 $cart = $stmt->fetch();
                 $cartID = $cart['CartID'];
 
-                echo "<h2>Checkout</h2><br>";
+                echo "<div class='page-header'>";
+                echo "<h2>Checkout</h2>";
+                echo "<div class='title-underline'></div>";
+                echo "</div>";
+
+                echo "<div class='cart-container'>";
 
                 echo "<h3>Order Summary</h3>";
+                echo "<div class='cart-summary summary-list'>";
 
                 $stmt = $pdo->prepare("
                 SELECT Product.Name, CartProduct.Quantity, Cart.TotalCost
@@ -57,10 +63,11 @@
                 $items = $stmt->fetchAll();
 
                 foreach($items as $item) {
-                    echo $item['Name'] . " x" . $item['Quantity'] . "<br>";
+                    echo "<p class='summary-item'>" . $item['Name'] . " <span>x" . $item['Quantity'] . "</span></p>";
                 }
 
-                echo "<h4>Total: \${$item['TotalCost']}</h4>";
+                echo "<h4 class='total-display'>Total: <span class='total-amount'>\${$item['TotalCost']}</span></h4>";
+                echo "</div>";
 
                 $stmt = $pdo->prepare("SELECT Users.Name, Users.Email, Users.PhoneNum, 
                 Payment.PaymentID, StoreOrder.ShipAddr, StoreOrder.BillAddr 
@@ -73,28 +80,54 @@
                 $stmt->execute([$cartID, $userID]);
                 $checkout = $stmt->fetch();
                 
-                echo "<h2>Contact information: </h2>";
+                echo "<form method='POST' action='user_orderplaced.php'>";
+                echo "<input type='hidden' name='totalCost' value='{$item['TotalCost']}'>";
+                echo "<input type='hidden' name='cartID' value='{$cartID}'>";
+                
+                echo "<div class='checkout-grid'>";
+                
+                echo "<div class='checkout-section'>";
+                echo "<h3>Contact information</h3>";
+                echo "<div class='checkout-field'>";
+                echo "<label>Name: </label>";
+                echo "<input type='text' class='nice-select' name='Name' value='{$checkout['Name']}' required>";
+                echo "</div>";
+                echo "<div class='checkout-field'>";
+                echo "<label>Email: </label>";
+                echo "<input type='text' class='nice-select' name='Email' value='{$checkout['Email']}' required>";
+                echo "</div>";
+                echo "<div class='checkout-field'>";
+                echo "<label>Phone Number: </label>";
+                echo "<input type='text' class='nice-select' name='PhoneNum' value='{$checkout['PhoneNum']}' required>";
+                echo "</div>";
+                echo "</div>";
 
-                echo "<form method='POST' action='user_orderplaced.php'>
-                <input type='hidden' name='totalCost' value='{$item['TotalCost']}'>
-                <input type='hidden' name='cartID' value='{$cartID}'>
-                <label>Name: </label><br>
-                <input type='text' name='Name' value='{$checkout['Name']}'><br><br>
-                <label>Email: </label><br>
-                <input type='text' name='Email' value='{$checkout['Email']}'><br><br>
-                <label>Phone Number: </label><br>
-                <input type='text' name='PhoneNum' value='{$checkout['PhoneNum']}'><br><br>
-                <h2>Payment Information: </h2><br>
-                <label>Card Number: </label><br>
-                <input type='text' name='CardNum' value='{$checkout['PaymentID']}'><br><br>
-                <label>Billing Address: </label><br>
-                <input type='text' name='BillingAddress' value='{$checkout['BillAddr']}' style='width:300px'><br><br>
-                <h2>Shipping address: </h2><br>
-                <label>Address: </label><br>
-                <input type='text' name='Address' value='{$checkout['ShipAddr']}' style='width:300px'><br><br>
-                <a href='cart.php' style='padding:50px'>< Go Back</a>
-                <button type='submit' name='place_order'>Place Order</button>
-                </form>";
+                echo "<div class='checkout-section'>";
+                echo "<h3>Payment & Shipping</h3>";
+                echo "<div class='checkout-field'>";
+                echo "<h2>Payment Information: </h2>";
+                echo "<label>Card Number: </label>";
+                echo "<input type='text' class='nice-select' name='CardNum' value='{$checkout['PaymentID']}' required>";
+                echo "</div>";
+                echo "<div class='checkout-field'>";
+                echo "<label>Billing Address: </label>";
+                echo "<input type='text' class='nice-select' name='BillingAddress' value='{$checkout['BillAddr']}' required>";
+                echo "</div>";
+                echo "<div class='checkout-field'>";
+                echo "<h2>Shipping address: </h2>";
+                echo "<label>Address: </label>";
+                echo "<input type='text' class='nice-select' name='Address' value='{$checkout['ShipAddr']}' required>";
+                echo "</div>";
+                echo "</div>";
+                
+                echo "</div>";
+
+                echo "<div class='checkout-footer'>";
+                echo "<a href='cart.php' class='back-link'>&lt; Go Back</a>";
+                echo "<button type='submit' class='btn checkout-btn' name='place_order'>Place Order</button>";
+                echo "</div>";
+                echo "</form>";
+                echo "</div>";
             }  
         }
         catch(PDOexception $e) {

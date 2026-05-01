@@ -12,7 +12,7 @@
                 <li><a href="cart.php">Cart</a></li>
                 <li><a href="track_order.php">Check Order Status</a></li>
                 <li><form method="POST" action="logout.php">
-                <button type="submit">Switch User</button>
+                <button class="nav-btn" type="submit">Switch User</button>
                 </form></li>
             </ul>
         </nav>
@@ -45,13 +45,16 @@
             $orders = $info_stmt->fetchALL(PDO::FETCH_ASSOC);
             $sum = 0;
 
+            echo "<div class='page-header'>";
+            echo "<h2> Your Orders </h2>";
+            echo "<div class='title-underline'></div>";
+            echo "</div>";
 
-
-            if(!$orders) { echo "No Orders Found!"; die(); }
-
+            if(!$orders) { 
+                echo "<div class='cart-container'><p style='text-align:center;'>No Orders Found!</p></div>"; 
+            }
             else {
-
-                echo "<h2> Your Orders: </h2><br>";
+                echo "<div class='cart-container'>";
 
                 foreach ($orders as $row){
                     
@@ -63,43 +66,44 @@
                     $stmt->execute([$row['OrderNum']]);
                     $items = $stmt->fetchAll();
 
-                    echo "<h3> Order #: {$row['OrderNum']}</h3><br>";
-                    echo "<h3> Order Status: {$row['Status']}</h3><br>";
+                    echo "<div class='order-card'>";
+                    
+                    echo "<div class='order-header'>";
+                        echo "<h3> Order #: {$row['OrderNum']}</h3>";
+                        echo "<span class='status-badge'>{$row['Status']}</span>";
+                    echo "</div>";
                     
                     if ($row['Status'] == 'Processing') {
-                        echo "<h3> Tracking Number: Not Available Until Shipped. </h3><br>";
+                        echo "<p><strong>Tracking:</strong> Not Available Until Shipped.</p>";
                     }
                     else {
-                        echo "<h3> Tracking Number: {$row['TrackingNum']}</h3><br>";
+                        echo "<p><strong>Tracking:</strong> {$row['TrackingNum']}</p>";
                     }
 
-                    echo "<h3> Items Ordered: </h3><br>";
+                    echo "<div class='order-details-box'>";
+                        echo "<strong>Items Ordered:</strong>";
+                        foreach($items as $item) {
+                            echo "<p class='summary-item'>" . $item['Name'] . " <span>x" . $item['Quantity'] . "</span></p>";
+                        }
+                        echo "<h4 class='total-display'>Order Total: <span class='total-amount'>\${$row['PricePaid']}</span></h4>";
+                    echo "</div>";
 
-                    foreach($items as $item) {
-                        echo $item['Name'] . " x" . $item['Quantity'] . "<br>";
-                    }
-
-                    echo "<h4>Your Total: \${$row['PricePaid']}</h4><br><br><br>";
+                    echo "</div>"; 
 
                     $sum = $sum + $row['PricePaid'];
-
                 }
 
-                echo "<h4>Your Total for All Orders: \${$sum}</h4><br>";
+                echo "<div class='cart-summary'>";
+                echo "<h3>Total Spent Across All Orders: <span class='total-amount'>\${$sum}</span></h3>";
+                echo "</div>";
 
+                echo "</div>"; 
             }
-
-
         }
-
         catch(PDOexception $e) {
             echo "Connection to database has failed: " . $e->getMessage();
         }
 ?>
 
 </body>
-
 </html>
-
-
-
