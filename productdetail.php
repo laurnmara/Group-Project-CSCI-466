@@ -56,7 +56,7 @@
                         
                         echo "<h4 class='product-name'>{$result['Name']}</h4>";
                         echo "<p>{$result['Description']}</p>";
-                        echo "<p class='product-price'>{$result['Price']}</p>";
+                        echo "<p class='product-price'>\${$result['Price']}</p>";
                         echo "<p>There are currently: {$result['NumInStock']} in stock.</p>";
                         
                         echo "<form method='POST' action='cart.php'>

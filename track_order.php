@@ -37,8 +37,7 @@
 
             $info_stmt = $pdo->prepare(
                 "SELECT * FROM StoreOrder
-                JOIN Cart ON StoreOrder.UserID = Cart.UserID
-                WHERE StoreOrder.UserID = ?"
+                WHERE UserID = ?"
             );
 
             $info_stmt->execute([$userID]);
@@ -46,13 +45,24 @@
             $orders = $info_stmt->fetchALL(PDO::FETCH_ASSOC);
             $sum = 0;
 
+
+
             if(!$orders) { echo "No Orders Found!"; die(); }
 
             else {
 
-                foreach ($orders as $row){
+                echo "<h2> Your Orders: </h2><br>";
 
-                    echo "<h2> Your Orders: </h2><br>";
+                foreach ($orders as $row){
+                    
+                    //fetch all items matching specific order number
+                    $stmt = $pdo->prepare("SELECT Product.Name, OrderProduct.Quantity 
+                    FROM OrderProduct 
+                    JOIN Product ON Product.ProductID = OrderProduct.ProductID 
+                    WHERE OrderProduct.OrderNum = ?");
+                    $stmt->execute([$row['OrderNum']]);
+                    $items = $stmt->fetchAll();
+
                     echo "<h3> Order #: {$row['OrderNum']}</h3><br>";
                     echo "<h3> Order Status: {$row['Status']}</h3><br>";
                     
@@ -63,7 +73,13 @@
                         echo "<h3> Tracking Number: {$row['TrackingNum']}</h3><br>";
                     }
 
-                    echo "<h3>Your Total: \${$row['PricePaid']}</h3><br><br><br>";
+                    echo "<h3> Items Ordered: </h3><br>";
+
+                    foreach($items as $item) {
+                        echo $item['Name'] . " x" . $item['Quantity'] . "<br>";
+                    }
+
+                    echo "<h4>Your Total: \${$row['PricePaid']}</h4><br><br><br>";
 
                     $sum = $sum + $row['PricePaid'];
 

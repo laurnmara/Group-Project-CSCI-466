@@ -43,22 +43,24 @@
 
             if (!$products_fetch) { echo 'No results found!'; die(); }
             else {
-                echo "<table cellspacing=2>";
+                
+                echo "<div class='product-grid'>";
+
                 foreach($products_fetch as $row) {
-                    echo "<tr>";
-                    echo "<td>{$row['ProductID']}</td>";
-                    echo "<td>{$row['Name']}</td>";
-                    echo "<td>{$row['Description']}</td>";
-                    echo "<td>{$row['Price']}</td>";          
-                    echo "<td><form method='POST' action='owner-inventory.php' onsubmit=\"return confirm('Make Changes?');\">
-                    <input type='hidden' name='product_id' value='{$row['ProductID']}'>
-                    <label>Qty: </label>
-                    <input type='number' name='quantity' value='{$row['NumInStock']}' min='0' style='width:100px;'>
-                    <button type='submit' name='update_btn'>Update</button>
-                    </form></td>";                   
-                    echo "</tr>";
+                    echo "<div class='product-card'>";
+                        echo "<h4>{$row['ProductID']}</h4>";
+                        echo "<h3 class='product-name'>{$row['Name']}</h3>";
+                        echo "<h4>{$row['Description']}</h4>";
+                        echo "<p class='product-price'>\${$row['Price']}</p>";          
+                        echo "<td><form method='POST' action='owner-inventory.php' onsubmit=\"return confirm('Make Changes?');\">
+                        <input type='hidden' name='product_id' value='{$row['ProductID']}'>
+                        <label>Qty: </label>
+                        <input type='number' name='quantity' value='{$row['NumInStock']}' min='0' style='width:100px;'>
+                        <button class='btn' type='submit' name='update_btn'>Update</button>
+                        </form></td>";                   
+                    echo "</div>";
                 }
-                echo "</table>";
+                echo "</div>";
             }
             
         }

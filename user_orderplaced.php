@@ -54,15 +54,32 @@
                     $stmt->execute([$paymentID, $userID]);
                 }
 
+                //update User info if changed
                 $stmt = $pdo->prepare("UPDATE Users SET Name = ?, Email = ?, PhoneNum = ? WHERE UserID = ?");
                 $stmt->execute([$name, $email, $phone, $userID]);
 
+                //create new store order
                 $date = date("Y-m-d");
                 $stmt = $pdo->prepare("INSERT INTO StoreOrder (PaymentID, CartID, UserID, 
                 ShipAddr, BillAddr, PricePaid, Date, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
                 $stmt->execute([$paymentID, $cartID, $userID, $address, $bill_address, 
                 $totalPaid, $date, "Processing"]);
 
+                //get the new ordernum to create new orderproduct
+                $orderNum = $pdo->lastInsertId();
+                
+                //get produtID and quantity from cartproduct to populate into orderproduct
+                $stmt = $pdo->prepare("SELECT * FROM CartProduct WHERE CartID = ?");
+                $stmt->execute([$cartID]);
+                $products = $stmt->fetchAll(PDO:FETCH_ASSOC);
+
+                //add to OrderProduct (new order)
+                foreach ($products as $item){
+                    $stmt = $pdo->prepare("INSERT INTO OrderProduct (OrderNum, ProductID, Quantity) VALUES (?, ?, ?)");
+                    $stmt->execute([$orderNum, $item['ProductID'], $item['Quantity']]);
+                }
+
+                //reset cartproduct(reset the cart)
                 $stmt = $pdo->prepare("DELETE FROM CartProduct WHERE CartID = ?");
                 $stmt->execute([$cartID]);
 
